@@ -5,7 +5,7 @@ import 'package:xlo_mobx/repositories/ibge_repository.dart';
 
 class CepRepository {
   Dio dio = Dio();
-  final url = 'http://viacep.com.br/ws';
+  final url = 'https://viacep.com.br/ws';
 
   Future<Address> getAddressFromApi(String cep) async {
     if (cep == null || cep.isEmpty) {
@@ -18,7 +18,7 @@ class CepRepository {
     }
 
     try {
-      final response = await dio.get(url + "/${clearCep}/json");
+      final response = await dio.get(url + "/${clearCep}/json/");
 
       if (response.data.containsKey('erro') && response.data['erro']) {
         return Future.error('CEP Inválido');
