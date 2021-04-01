@@ -1,7 +1,11 @@
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+import 'package:xlo_mobx/models/ad.dart';
 import 'package:xlo_mobx/models/address.dart';
 import 'package:xlo_mobx/models/category.dart';
+import 'package:xlo_mobx/repositories/ad_repository.dart';
 import 'package:xlo_mobx/stores/cep_store.dart';
+import 'package:xlo_mobx/stores/user_manager_store.dart';
 
 part 'create_store.g.dart';
 
@@ -131,5 +135,34 @@ abstract class _CreateStore with Store {
   @action
   void invalidSendPressed() => showErrors = true;
 
-  bool _send() {}
+  @observable
+  bool loading = false;
+
+  @observable
+  String error;
+
+  @observable
+  bool savedAd;
+
+  @action
+  Future<void> _send() async {
+    final ad = Ad(
+      title: title,
+      description: description,
+      images: images,
+      address: address,
+      category: category,
+      price: price,
+      hidePhone: hidePhone,
+      user: GetIt.I<UserManagerStore>().user,
+    );
+    loading = true;
+    try {
+      await AdRepository().save(ad);
+      savedAd = true;
+    } catch (e) {
+      error = e;
+    }
+    loading = false;
+  }
 }
