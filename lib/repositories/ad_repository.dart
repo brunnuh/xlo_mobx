@@ -90,13 +90,16 @@ class AdRepository {
     FilterStore filter,
     String search,
     Category category,
+    int page,
   }) async {
     final queryBuilder = QueryBuilder<ParseObject>(ParseObject(keyAdTable));
 
     queryBuilder.includeObject(
         [keyAdOwner, keyAdCategory]); // para trazer as seguintes tables
 
-    queryBuilder.setLimit(20); // somente 20 anuncios
+    queryBuilder
+        .setAmountToSkip(page * 10); // pular o numero de paginas ja carregadas
+    queryBuilder.setLimit(10); // somente 20 anuncios
 
     queryBuilder.whereEqualTo(
         keyAdStatus, AdStatus.ACTIVE.index); // somente anuncios ativos
@@ -125,8 +128,6 @@ class AdRepository {
         queryBuilder.orderByDescending(keyAdCreatedAt);
         break;
     }
-
-    print('min price? ' + filter.minPrice.toString());
 
     if (filter.minPrice != null && filter.minPrice > 0) {
       // busca pelo valor maior ou igual a minprice
