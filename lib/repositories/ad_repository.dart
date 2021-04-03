@@ -3,8 +3,11 @@ import 'dart:io';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import 'package:path/path.dart' as path;
 import 'package:xlo_mobx/models/ad.dart';
+import 'package:xlo_mobx/models/category.dart';
+import 'package:xlo_mobx/models/user.dart';
 import 'package:xlo_mobx/repositories/parse_errors.dart';
 import 'package:xlo_mobx/repositories/table_keys.dart';
+import 'package:xlo_mobx/stores/filter_store.dart';
 
 class AdRepository {
   Future<void> save(Ad ad) async {
@@ -81,5 +84,85 @@ class AdRepository {
       return Future.error('Falha ao salvar imagen(s)');
     }
     return parseImages;
+  }
+
+  Future<List<Ad>> getHomeAdList({
+    FilterStore filter,
+    String search,
+    Category category,
+  }) async {
+    final queryBuilder = QueryBuilder<ParseObject>(ParseObject(keyAdTable));
+
+    queryBuilder.includeObject(
+        [keyAdOwner, keyAdCategory]); // para trazer as seguintes tables
+
+    queryBuilder.setLimit(20); // somente 20 anuncios
+
+    queryBuilder.whereEqualTo(
+        keyAdStatus, AdStatus.ACTIVE.index); // somente anuncios ativos
+
+    if (search != null && search.trim().isNotEmpty) {
+      // buscando pelo titulo do ad
+      queryBuilder.whereContains(keyAdTitle, search, caseSensitive: false);
+    }
+    if (category != null && category.id != "*") {
+      // busca pela categoria do anuncio
+      queryBuilder.whereEqualTo(
+        keyAdCategory,
+        (ParseObject(keyCategoryTable)..set(keyCategoryId, category.id))
+            .toPointer(),
+      );
+    }
+
+    switch (filter.orderBy) {
+      case OrderBy.PRICE:
+        // ordenar pelo preço
+        queryBuilder.orderByAscending(keyAdPrice);
+        break;
+      case OrderBy.DATE:
+      default:
+        // ordernar pela data
+        queryBuilder.orderByDescending(keyAdCreatedAt);
+        break;
+    }
+
+    print('min price? ' + filter.minPrice.toString());
+
+    if (filter.minPrice != null && filter.minPrice > 0) {
+      // busca pelo valor maior ou igual a minprice
+      queryBuilder.whereGreaterThanOrEqualsTo(keyAdPrice, filter.minPrice);
+    }
+
+    if (filter.maxPrice != null && filter.maxPrice > 0) {
+      // busca pelo valor menor ou igual a maxprice
+      queryBuilder.whereLessThanOrEqualTo(keyAdPrice, filter.maxPrice);
+    }
+    if (filter.vendorType != null &&
+        filter.vendorType > 0 &&
+        filter.vendorType <
+            (VENDOR_TYPE_PARTICULAR | VENDOR_TYPE_PROFESSIONAL)) {
+      // subquery do usuario
+      final userQuery = QueryBuilder<ParseUser>(ParseUser.forQuery());
+      if (filter.vendorType == VENDOR_TYPE_PARTICULAR) {
+        // buscando os usuarios particulares
+        userQuery.whereEqualTo(keyUserType, UserType.PARTICULAR.index);
+      }
+      if (filter.vendorType == VENDOR_TYPE_PROFESSIONAL) {
+        // buscando os usuarios profissional
+        userQuery.whereEqualTo(keyUserType, UserType.PROFESSIONAL.index);
+      }
+
+      // query do filtro
+      // onde vai verificar se combina a query do filtro com a do usuario e retornar somente elas
+      queryBuilder.whereMatchesQuery(keyAdOwner, userQuery);
+    }
+    final response = await queryBuilder.query();
+    if (response.success && response.results != null) {
+      return response.results.map((e) => Ad.fromParse(e)).toList();
+    } else if (response.success && response.results == null) {
+      return [];
+    } else {
+      return Future.error(ParseErrors.getDescription(response.error.code));
+    }
   }
 }

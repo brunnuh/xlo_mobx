@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import 'package:xlo_mobx/screens/base/base_screen.dart';
@@ -47,6 +48,14 @@ class MyApp extends StatelessWidget {
           ),
           cursorColor: Colors.orange // cor do cursor
           ),
+      supportedLocales: const [
+        Locale('pt', 'BR'),
+      ],
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
       debugShowCheckedModeBanner: false,
       home: BaseScreen(),
     );

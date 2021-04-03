@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:get_it/get_it.dart';
 import 'package:xlo_mobx/screens/filter/components/section_title.dart';
 import 'package:xlo_mobx/stores/filter_store.dart';
 
 class VendorTypeField extends StatelessWidget {
-  final FilterStore filterStore = GetIt.I<FilterStore>();
+  final FilterStore filterStore;
+
+  VendorTypeField({this.filterStore});
 
   @override
   Widget build(BuildContext context) {
