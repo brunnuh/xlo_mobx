@@ -1,5 +1,7 @@
 # xlo_mobx
 
+![alt_text](assets/XLO.gif)
+
 A new Flutter application.
 
 ## Getting Started

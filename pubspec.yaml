@@ -40,7 +40,8 @@ dependencies:
   path: ^1.8.0
   cached_network_image: ^2.4.1
   intl: ^0.17.0
-
+  carousel_pro: ^1.0.0
+  readmore: ^2.0.0
 
   flutter_localizations:
     sdk: flutter
