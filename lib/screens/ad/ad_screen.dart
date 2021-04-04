@@ -54,7 +54,7 @@ class AdScreen extends StatelessWidget {
                     ),
                     UserPanel(ad),
                     const SizedBox(
-                      height: 46,
+                      height: 120,
                     ),
                   ],
                 ),
