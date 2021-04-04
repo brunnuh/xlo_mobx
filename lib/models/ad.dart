@@ -69,4 +69,9 @@ class Ad {
       status: AdStatus.values[parse.get<int>(keyAdStatus)],
     );
   }
+
+  @override
+  String toString() {
+    return 'Ad{id: $id, images: $images, title: $title, description: $description, category: $category, address: $address, price: $price, hidePhone: $hidePhone, status: $status, created: $created, user: $user, views: $views}';
+  }
 }

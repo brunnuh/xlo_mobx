@@ -12,6 +12,7 @@ import 'package:xlo_mobx/stores/filter_store.dart';
 class AdRepository {
   Future<void> save(Ad ad) async {
     try {
+      print(ad.toString());
       final parseImages = await saveImages(ad.images);
 
       final parseUser = ParseUser('', '', '')
@@ -62,6 +63,7 @@ class AdRepository {
     final parseImages = <ParseFile>[];
 
     try {
+      print(images);
       for (final image in images) {
         if (image is File) {
           // se for um arquivo
@@ -81,6 +83,7 @@ class AdRepository {
         }
       }
     } catch (e) {
+      print(e);
       return Future.error('Falha ao salvar imagen(s)');
     }
     return parseImages;

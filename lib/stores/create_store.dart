@@ -5,8 +5,9 @@ import 'package:xlo_mobx/models/ad.dart';
 import 'package:xlo_mobx/models/address.dart';
 import 'package:xlo_mobx/models/category.dart';
 import 'package:xlo_mobx/repositories/ad_repository.dart';
-import 'package:xlo_mobx/stores/cep_store.dart';
 import 'package:xlo_mobx/stores/user_manager_store.dart';
+
+import 'cep_store.dart';
 
 part 'create_store.g.dart';
 
@@ -16,7 +17,9 @@ abstract class _CreateStore with Store {
   _CreateStore(this.ad) {
     title = ad.title ?? '';
     description = ad.description ?? '';
+
     images = ad.images != null ? ad.images.asObservable() : ObservableList();
+
     category = ad.category;
     priceText = ad.price?.formattedMoney(siflao: false) ?? '';
     hidePhone = ad.hidePhone;
@@ -166,7 +169,7 @@ abstract class _CreateStore with Store {
   Future<void> _send() async {
     ad.title = title;
     ad.description = description;
-    images = images;
+    ad.images = images;
     ad.address = address;
     ad.category = category;
     ad.price = price;
