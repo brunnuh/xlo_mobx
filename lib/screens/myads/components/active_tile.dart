@@ -8,6 +8,12 @@ class ActiveTile extends StatelessWidget {
 
   ActiveTile(this.ad);
 
+  final List<MenuChoice> choices = [
+    MenuChoice(index: 0, title: 'Editar', iconData: Icons.edit),
+    MenuChoice(index: 1, title: 'Já vendi', iconData: Icons.thumb_up),
+    MenuChoice(index: 2, title: 'Excluir', iconData: Icons.delete),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -54,10 +60,58 @@ class ActiveTile extends StatelessWidget {
                   )
                 ],
               ),
+            ),
+            PopupMenuButton<MenuChoice>(
+              onSelected: (choice) {
+                switch (choice.index) {
+                  case 0:
+                    break;
+                  case 1:
+                    break;
+                  case 2:
+                    break;
+                }
+              },
+              itemBuilder: (_) {
+                return choices
+                    .map(
+                      (choice) => PopupMenuItem<MenuChoice>(
+                        value: choice,
+                        child: Row(
+                          children: [
+                            Icon(
+                              choice.iconData,
+                              size: 20,
+                              color: Colors.purple,
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Text(
+                              choice.title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                color: Colors.purple,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                    .toList();
+              },
             )
           ],
         ),
       ),
     );
   }
+}
+
+class MenuChoice {
+  final int index;
+  final String title;
+  final IconData iconData;
+
+  MenuChoice({this.index, this.title, this.iconData});
 }
