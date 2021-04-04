@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:xlo_mobx/screens/myads/components/sold_tile.dart';
 import 'package:xlo_mobx/stores/myads_store.dart';
 
 import 'components/active_tile.dart';
+import 'components/pending_tile.dart';
 
 class MyAdsScreen extends StatefulWidget {
+  final int initialPage;
+
+  MyAdsScreen({this.initialPage = 0});
+
   @override
   _MyAdsScreenState createState() => _MyAdsScreenState();
 }
@@ -19,7 +25,8 @@ class _MyAdsScreenState extends State<MyAdsScreen>
   void initState() {
     // TODO: implement initState
     super.initState();
-    tabController = TabController(length: 3, vsync: this);
+    tabController =
+        TabController(length: 3, vsync: this, initialIndex: widget.initialPage);
   }
 
   @override
@@ -59,12 +66,30 @@ class _MyAdsScreenState extends State<MyAdsScreen>
                     );
             },
           ),
-          Container(
-            color: Colors.red,
+          Observer(
+            builder: (_) {
+              return myAdsStore.pendingAds.isEmpty
+                  ? Container()
+                  : ListView.builder(
+                      itemCount: myAdsStore.pendingAds.length,
+                      itemBuilder: (_, index) {
+                        return PendingTile(myAdsStore.pendingAds[index]);
+                      },
+                    );
+            },
           ),
-          Container(
-            color: Colors.black,
-          )
+          Observer(
+            builder: (_) {
+              return myAdsStore.soldAds.isEmpty
+                  ? Container()
+                  : ListView.builder(
+                      itemCount: myAdsStore.soldAds.length,
+                      itemBuilder: (_, index) {
+                        return SoldTile(myAdsStore.soldAds[index]);
+                      },
+                    );
+            },
+          ),
         ],
       ),
     );

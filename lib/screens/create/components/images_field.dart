@@ -78,7 +78,9 @@ class ImagesField extends StatelessWidget {
                       child: GestureDetector(
                         child: CircleAvatar(
                           radius: 40,
-                          backgroundImage: FileImage(createStore.images[index]),
+                          backgroundImage: createStore.images[index] is File
+                              ? FileImage(createStore.images[index])
+                              : NetworkImage(createStore.images[index]),
                         ),
                         onTap: () {
                           showDialog(

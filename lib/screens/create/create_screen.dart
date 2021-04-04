@@ -7,6 +7,8 @@ import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:xlo_mobx/components/custom_drawer/custom_drawer.dart';
 import 'package:xlo_mobx/components/error_box.dart';
+import 'package:xlo_mobx/models/ad.dart';
+import 'package:xlo_mobx/screens/myads/my_ads_screen.dart';
 import 'package:xlo_mobx/stores/create_store.dart';
 import 'package:xlo_mobx/stores/page_store.dart';
 
@@ -16,11 +18,22 @@ import 'components/hide_phone_field.dart';
 import 'components/images_field.dart';
 
 class CreateScreen extends StatefulWidget {
+  CreateScreen({this.ad});
+
+  final Ad ad;
+
   @override
-  _CreateScreenState createState() => _CreateScreenState();
+  _CreateScreenState createState() => _CreateScreenState(ad);
 }
 
 class _CreateScreenState extends State<CreateScreen> {
+  _CreateScreenState(Ad ad)
+      : editing = ad != null,
+        createStore = CreateStore(ad ?? Ad());
+
+  bool editing;
+
+  final CreateStore createStore;
   @override
   void initState() {
     // TODO: implement initState
@@ -31,9 +44,16 @@ class _CreateScreenState extends State<CreateScreen> {
       }
     });*/
     when((_) => createStore.savedAd, () {
+      if (editing)
+        Navigator.of(context).pop(true);
       // chamado somente uma vez
-      GetIt.I<PageStore>().setPage(
-          0); //caso tenha alguma mudanca no savedAd, ir para pagina inicial
+      else {
+        GetIt.I<PageStore>().setPage(
+            0); //caso tenha alguma mudanca no savedAd, ir para pagina inicial
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => MyAdsScreen(initialPage: 1)),
+        );
+      }
     });
   }
 
@@ -45,13 +65,11 @@ class _CreateScreenState extends State<CreateScreen> {
 
   final contentPadding = EdgeInsets.fromLTRB(16, 10, 12, 10);
 
-  final CreateStore createStore = CreateStore();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Criar Anúncio'),
+        title: Text(editing ? 'Editar Anúncio' : 'Criar Anúncio'),
         centerTitle: true,
       ),
       body: Container(
@@ -93,6 +111,7 @@ class _CreateScreenState extends State<CreateScreen> {
                         Observer(
                           builder: (_) {
                             return TextFormField(
+                              initialValue: createStore.title,
                               onChanged: createStore.setTitle,
                               decoration: InputDecoration(
                                 labelText: "Titulo *",
@@ -106,6 +125,7 @@ class _CreateScreenState extends State<CreateScreen> {
                         Observer(
                           builder: (_) {
                             return TextFormField(
+                              initialValue: createStore.description,
                               onChanged: createStore.setDecription,
                               decoration: InputDecoration(
                                 labelText: "Descrição *",
@@ -122,6 +142,7 @@ class _CreateScreenState extends State<CreateScreen> {
                         Observer(
                           builder: (_) {
                             return TextFormField(
+                              initialValue: createStore.priceText,
                               onChanged: createStore.setPrice,
                               decoration: InputDecoration(
                                 labelText: "Preço *",
@@ -179,7 +200,9 @@ class _CreateScreenState extends State<CreateScreen> {
           ),
         ),
       ),
-      drawer: CustomDrawer(),
+      drawer: editing ? null : CustomDrawer(),
     );
   }
 }
+
+/**/

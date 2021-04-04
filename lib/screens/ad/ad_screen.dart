@@ -53,15 +53,15 @@ class AdScreen extends StatelessWidget {
                       color: Colors.grey[500],
                     ),
                     UserPanel(ad),
-                    const SizedBox(
-                      height: 120,
+                    SizedBox(
+                      height: (ad.status == AdStatus.ACTIVE ? 120 : 40),
                     ),
                   ],
                 ),
               )
             ],
           ),
-          BottomBar(ad),
+          ad.status == AdStatus.PENDING ? Container() : BottomBar(ad),
         ],
       ),
     );

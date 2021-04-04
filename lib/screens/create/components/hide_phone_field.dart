@@ -16,7 +16,7 @@ class HidePhoneField extends StatelessWidget {
           Observer(
             builder: (_) {
               return Checkbox(
-                value: createStore.hidePhone,
+                value: createStore.hidePhone ?? false,
                 onChanged: createStore.setPhone,
               );
             },

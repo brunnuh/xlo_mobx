@@ -9,8 +9,9 @@ extension StringExtension on String {
 }
 
 extension NumberExtension on num {
-  String formattedMoney() {
-    return NumberFormat('R\$ ###,##0.00', 'pt-BR').format(this);
+  String formattedMoney({bool siflao = true}) {
+    return NumberFormat((siflao ? 'R\$' : '') + '###,##0.00', 'pt-BR')
+        .format(this);
   }
 }
 

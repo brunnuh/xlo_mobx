@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+import 'package:xlo_mobx/helpers/extensions.dart';
 import 'package:xlo_mobx/models/ad.dart';
 import 'package:xlo_mobx/models/address.dart';
 import 'package:xlo_mobx/models/category.dart';
@@ -12,6 +13,23 @@ part 'create_store.g.dart';
 class CreateStore = _CreateStore with _$CreateStore;
 
 abstract class _CreateStore with Store {
+  _CreateStore(this.ad) {
+    title = ad.title ?? '';
+    description = ad.description ?? '';
+    images = ad.images != null ? ad.images.asObservable() : ObservableList();
+    category = ad.category;
+    priceText = ad.price?.formattedMoney(siflao: false) ?? '';
+    hidePhone = ad.hidePhone;
+
+    if (ad.address != null) {
+      cepStore = CepStore(ad.address.cep);
+    } else {
+      cepStore = CepStore(null);
+    }
+  }
+
+  final Ad ad;
+
   ObservableList images = ObservableList();
 
   @observable
@@ -80,7 +98,7 @@ abstract class _CreateStore with Store {
     }
   }
 
-  CepStore cepStore = CepStore();
+  CepStore cepStore;
 
   @computed
   Address get address => cepStore.address;
@@ -146,16 +164,15 @@ abstract class _CreateStore with Store {
 
   @action
   Future<void> _send() async {
-    final ad = Ad(
-      title: title,
-      description: description,
-      images: images,
-      address: address,
-      category: category,
-      price: price,
-      hidePhone: hidePhone,
-      user: GetIt.I<UserManagerStore>().user,
-    );
+    ad.title = title;
+    ad.description = description;
+    images = images;
+    ad.address = address;
+    ad.category = category;
+    ad.price = price;
+    ad.hidePhone = hidePhone;
+    ad.user = GetIt.I<UserManagerStore>().user;
+
     loading = true;
     try {
       await AdRepository().save(ad);
