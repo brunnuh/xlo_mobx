@@ -106,6 +106,21 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
+  final _$lastPageAtom = Atom(name: '_HomeStore.lastPage');
+
+  @override
+  bool get lastPage {
+    _$lastPageAtom.reportRead();
+    return super.lastPage;
+  }
+
+  @override
+  set lastPage(bool value) {
+    _$lastPageAtom.reportWrite(value, super.lastPage, () {
+      super.lastPage = value;
+    });
+  }
+
   final _$_HomeStoreActionController = ActionController(name: '_HomeStore');
 
   @override
@@ -175,6 +190,17 @@ mixin _$HomeStore on _HomeStore, Store {
   }
 
   @override
+  void addNewsAds(List<Ad> newAds) {
+    final _$actionInfo =
+        _$_HomeStoreActionController.startAction(name: '_HomeStore.addNewsAds');
+    try {
+      return super.addNewsAds(newAds);
+    } finally {
+      _$_HomeStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 loading: ${loading},
@@ -183,6 +209,7 @@ search: ${search},
 category: ${category},
 filter: ${filter},
 page: ${page},
+lastPage: ${lastPage},
 itemCount: ${itemCount}
     ''';
   }
